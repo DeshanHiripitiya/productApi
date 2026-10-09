@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using ProductApi.Data;
 using ProductApi.Models;
 using ProductApi.Services;
 
@@ -8,17 +10,21 @@ namespace ProductApi.Controllers;
 [Route("api/[controller]")]
 public class ProductsController : ControllerBase
 {
+    private readonly AppDbContext _context;
     private readonly IProductService _service;
 
-    public ProductsController(IProductService service)
+    public ProductsController(AppDbContext context, IProductService service)
     {
+        _context = context;
         _service = service;
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetProducts()
     {
-        return Ok(_service.GetAll());
+        var products = await _context.Products.ToListAsync();
+
+        return Ok(products);
     }
 
     [HttpGet("{id:int}")]
