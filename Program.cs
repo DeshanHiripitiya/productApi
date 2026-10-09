@@ -5,7 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=products.db"));
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException("The DefaultConnection connection string is not configured.")));
 	
 builder.Services.AddSingleton<ProductApi.Services.IProductService, ProductApi.Services.ProductService>();
 builder.Services.AddEndpointsApiExplorer();
