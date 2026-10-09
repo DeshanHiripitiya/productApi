@@ -27,12 +27,13 @@ public class ProductsController : ControllerBase
         return Ok(products);
     }
 
-    [HttpGet("{id:int}")]
-    public IActionResult GetById(int id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetProduct(int id)
     {
-        var product = _service.GetById(id);
+        var product = await _context.Products
+            .FirstOrDefaultAsync(p => p.Id == id);
 
-        if (product is null)
+        if (product == null)
         {
             return NotFound();
         }
@@ -41,15 +42,14 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost]
-public IActionResult Create(Product product)
-{
-    var createdProduct = _service.Add(product);
+    public async Task<IActionResult> CreateProduct(Product product)
+    {
+        _context.Products.Add(product);
 
-    return CreatedAtAction(
-        nameof(GetById),
-        new { id = createdProduct.Id },
-        createdProduct);
-}
+        await _context.SaveChangesAsync();
+
+        return Ok(product);
+    }
 
     [HttpPut("{id:int}")]
     public IActionResult Update(int id, Product product)
@@ -57,9 +57,19 @@ public IActionResult Create(Product product)
         return _service.Update(id, product) ? NoContent() : NotFound();
     }
 
-    [HttpDelete("{id:int}")]
-    public IActionResult Delete(int id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteProduct(int id)
     {
-        return _service.Delete(id) ? NoContent() : NotFound();
+        var product = await _context.Products
+            .FindAsync(id);
+
+        if (product == null)
+            return NotFound();
+
+        _context.Products.Remove(product);
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 }
