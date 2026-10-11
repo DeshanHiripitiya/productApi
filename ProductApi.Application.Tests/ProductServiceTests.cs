@@ -80,4 +80,118 @@ public async Task GetAllAsync_WhenProductsExist_ReturnsProductDtos()
             It.IsAny<CancellationToken>()),
         Times.Once);
 }
+
+[Fact]
+public async Task GetByIdAsync_WhenProductExists_ReturnsProductDto()
+{
+    // Arrange
+    var product = new Product
+    {
+        Id = 1,
+        Name = "Wireless Mouse",
+        Price = 29.99m
+    };
+
+    var repository = new Mock<IProductRepository>();
+    repository
+        .Setup(repository => repository.GetByIdAsync(
+            1,
+            It.IsAny<CancellationToken>()))
+        .ReturnsAsync(product);
+
+    var service = new ProductService(repository.Object);
+
+    // Act
+    var result = await service.GetByIdAsync(1);
+
+    // Assert
+    Assert.NotNull(result);
+    Assert.Equal(1, result.Id);
+    Assert.Equal("Wireless Mouse", result.Name);
+    Assert.Equal(29.99m, result.Price);
+
+    repository.Verify(
+        repository => repository.GetByIdAsync(
+            1,
+            It.IsAny<CancellationToken>()),
+        Times.Once);
+}
+
+[Fact]
+public async Task GetByIdAsync_WhenProductDoesNotExist_ReturnsNull()
+{
+    // Arrange
+    var repository = new Mock<IProductRepository>();
+    repository
+        .Setup(repository => repository.GetByIdAsync(
+            999,
+            It.IsAny<CancellationToken>()))
+        .ReturnsAsync((Product?)null);
+
+    var service = new ProductService(repository.Object);
+
+    // Act
+    var result = await service.GetByIdAsync(999);
+
+    // Assert
+    Assert.Null(result);
+
+    repository.Verify(
+        repository => repository.GetByIdAsync(
+            999,
+            It.IsAny<CancellationToken>()),
+        Times.Once);
+}
+
+[Fact]
+public async Task DeleteAsync_WhenProductExists_ReturnsTrue()
+{
+    // Arrange
+    var repository = new Mock<IProductRepository>();
+    repository
+        .Setup(repository => repository.DeleteAsync(
+            1,
+            It.IsAny<CancellationToken>()))
+        .ReturnsAsync(true);
+
+    var service = new ProductService(repository.Object);
+
+    // Act
+    var result = await service.DeleteAsync(1);
+
+    // Assert
+    Assert.True(result);
+
+    repository.Verify(
+        repository => repository.DeleteAsync(
+            1,
+            It.IsAny<CancellationToken>()),
+        Times.Once);
+}
+
+[Fact]
+public async Task DeleteAsync_WhenProductDoesNotExist_ReturnsFalse()
+{
+    // Arrange
+    var repository = new Mock<IProductRepository>();
+    repository
+        .Setup(repository => repository.DeleteAsync(
+            999,
+            It.IsAny<CancellationToken>()))
+        .ReturnsAsync(false);
+
+    var service = new ProductService(repository.Object);
+
+    // Act
+    var result = await service.DeleteAsync(999);
+
+    // Assert
+    Assert.False(result);
+
+    repository.Verify(
+        repository => repository.DeleteAsync(
+            999,
+            It.IsAny<CancellationToken>()),
+        Times.Once);
+}
 }
