@@ -19,4 +19,10 @@ public interface IProductRepository
     Task<bool> DeleteAsync(
         int id,
         CancellationToken cancellationToken = default);
+
+        Task<Product?> UpdateAsync(
+    int id,
+    string name,
+    decimal price,
+    CancellationToken cancellationToken = default);
 }

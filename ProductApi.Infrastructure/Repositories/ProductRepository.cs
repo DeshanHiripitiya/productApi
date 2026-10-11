@@ -64,4 +64,28 @@ public class ProductRepository : IProductRepository
 
     return true;
 }
+
+public async Task<Product?> UpdateAsync(
+    int id,
+    string name,
+    decimal price,
+    CancellationToken cancellationToken = default)
+{
+    var product = await _context.Products
+        .FirstOrDefaultAsync(
+            product => product.Id == id,
+            cancellationToken);
+
+    if (product is null)
+    {
+        return null;
+    }
+
+    product.Name = name;
+    product.Price = price;
+
+    await _context.SaveChangesAsync(cancellationToken);
+
+    return product;
+}
 }

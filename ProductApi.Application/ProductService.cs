@@ -104,4 +104,50 @@ public sealed class ProductService : IProductService
 
     return await _productRepository.DeleteAsync(id, cancellationToken);
 }
+
+public async Task<ProductDto?> UpdateAsync(
+    int id,
+    string name,
+    decimal price,
+    CancellationToken cancellationToken = default)
+{
+    if (id <= 0)
+    {
+        throw new ArgumentException(
+            "Product ID must be greater than zero.",
+            nameof(id));
+    }
+
+    if (string.IsNullOrWhiteSpace(name))
+    {
+        throw new ArgumentException(
+            "Product name is required.",
+            nameof(name));
+    }
+
+    if (price <= 0)
+    {
+        throw new ArgumentException(
+            "Product price must be greater than zero.",
+            nameof(price));
+    }
+
+    var product = await _productRepository.UpdateAsync(
+        id,
+        name.Trim(),
+        price,
+        cancellationToken);
+
+    if (product is null)
+    {
+        return null;
+    }
+
+    return new ProductDto
+    {
+        Id = product.Id,
+        Name = product.Name,
+        Price = product.Price
+    };
+}
 }

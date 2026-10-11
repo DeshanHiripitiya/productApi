@@ -139,6 +139,71 @@ public static class ProductEndpoints
 .Produces(StatusCodes.Status400BadRequest)
 .Produces(StatusCodes.Status404NotFound);
 
+app.MapPut("/api/products/{id:int}", async Task<Results<
+    Ok<ProductResponse>,
+    NotFound,
+    ValidationProblem,
+    ProblemHttpResult>> (
+    int id,
+    UpdateProductRequest request,
+    IProductService productService,
+    CancellationToken cancellationToken) =>
+{
+    if (id <= 0)
+    {
+        return TypedResults.Problem(
+            statusCode: StatusCodes.Status400BadRequest,
+            title: "Invalid product ID",
+            detail: "Product ID must be greater than zero.");
+    }
+
+    var validationResults = new List<ValidationResult>();
+    var isValid = Validator.TryValidateObject(
+        request,
+        new ValidationContext(request),
+        validationResults,
+        validateAllProperties: true);
+
+    if (!isValid)
+    {
+        var errors = validationResults
+            .SelectMany(result => result.MemberNames.Select(memberName => new
+            {
+                MemberName = memberName,
+                ErrorMessage = result.ErrorMessage ?? "The value is invalid."
+            }))
+            .GroupBy(error => error.MemberName)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(error => error.ErrorMessage).ToArray());
+
+        return TypedResults.ValidationProblem(errors);
+    }
+
+    var product = await productService.UpdateAsync(
+        id,
+        request.Name,
+        request.Price,
+        cancellationToken);
+
+    if (product is null)
+    {
+        return TypedResults.NotFound();
+    }
+
+    return TypedResults.Ok(new ProductResponse(
+        product.Id,
+        product.Name,
+        product.Price));
+})
+.WithName("UpdateProduct")
+.WithSummary("Update a product")
+.WithDescription("Replaces a product's name and price.")
+.Produces<ProductResponse>(StatusCodes.Status200OK)
+.ProducesValidationProblem()
+.Produces(StatusCodes.Status400BadRequest)
+.Produces(StatusCodes.Status404NotFound);
+
         return app;
     }
 }

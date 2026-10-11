@@ -19,3 +19,15 @@ public sealed record ProductResponse(
     int Id,
     string Name,
     decimal Price);
+
+/// <summary>Request payload for updating a product.</summary>
+public sealed record UpdateProductRequest
+{
+    /// <summary>The updated product name.</summary>
+    [Required, StringLength(200, MinimumLength = 1)]
+    public required string Name { get; init; }
+
+    /// <summary>The updated product price, which must be greater than zero.</summary>
+    [Range(0.01, 999999999.99)]
+    public required decimal Price { get; init; }
+}
