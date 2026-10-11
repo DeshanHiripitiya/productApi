@@ -1,0 +1,55 @@
+# Build output
+[Bb]in/
+[Oo]bj/
+[Aa]rtifacts/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww]in32/
+[Aa]rm/
+[Aa]rm64/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Test and coverage output
+[Tt]est[Rr]esults*/
+coverage/
+coverage.*
+
+# .NET tooling and publish output
+publish/
+*.publishsettings
+*.azurePubxml
+*.pubxml
+*.publish.xml
+project.lock.json
+project.fragment.lock.json
+
+# User-specific secrets and local environment settings
+secrets.json
+.env
+.env.*
+!.env.example
+
+# IDE and editor files
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
