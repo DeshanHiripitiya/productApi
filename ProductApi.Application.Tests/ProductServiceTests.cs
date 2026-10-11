@@ -42,4 +42,42 @@ public class ProductServiceTests
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
+
+    [Fact]
+public async Task GetAllAsync_WhenProductsExist_ReturnsProductDtos()
+{
+    // Arrange
+    var products = new List<Product>
+    {
+        new() { Id = 1, Name = "Wireless Mouse", Price = 29.99m },
+        new() { Id = 2, Name = "Keyboard", Price = 59.99m }
+    };
+
+    var repository = new Mock<IProductRepository>();
+    repository
+        .Setup(repository => repository.GetAllAsync(
+            It.IsAny<CancellationToken>()))
+        .ReturnsAsync(products);
+
+    var service = new ProductService(repository.Object);
+
+    // Act
+    var result = (await service.GetAllAsync()).ToList();
+
+    // Assert
+    Assert.Equal(2, result.Count);
+
+    Assert.Equal(1, result[0].Id);
+    Assert.Equal("Wireless Mouse", result[0].Name);
+    Assert.Equal(29.99m, result[0].Price);
+
+    Assert.Equal(2, result[1].Id);
+    Assert.Equal("Keyboard", result[1].Name);
+    Assert.Equal(59.99m, result[1].Price);
+
+    repository.Verify(
+        repository => repository.GetAllAsync(
+            It.IsAny<CancellationToken>()),
+        Times.Once);
+}
 }
