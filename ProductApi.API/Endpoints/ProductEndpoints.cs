@@ -110,6 +110,35 @@ public static class ProductEndpoints
         .Produces<ProductResponse>(StatusCodes.Status201Created)
         .ProducesValidationProblem();
 
+        app.MapDelete("/api/products/{id:int}", async Task<Results<
+    NoContent,
+    NotFound,
+    ProblemHttpResult>> (
+    int id,
+    IProductService productService,
+    CancellationToken cancellationToken) =>
+{
+    if (id <= 0)
+    {
+        return TypedResults.Problem(
+            statusCode: StatusCodes.Status400BadRequest,
+            title: "Invalid product ID",
+            detail: "Product ID must be greater than zero.");
+    }
+
+    var deleted = await productService.DeleteAsync(id, cancellationToken);
+
+    return deleted
+        ? TypedResults.NoContent()
+        : TypedResults.NotFound();
+})
+.WithName("DeleteProduct")
+.WithSummary("Delete a product")
+.WithDescription("Deletes a product by ID.")
+.Produces(StatusCodes.Status204NoContent)
+.Produces(StatusCodes.Status400BadRequest)
+.Produces(StatusCodes.Status404NotFound);
+
         return app;
     }
 }

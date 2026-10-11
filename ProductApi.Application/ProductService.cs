@@ -90,4 +90,18 @@ public sealed class ProductService : IProductService
             Price = product.Price
         };
     }
+
+    public async Task<bool> DeleteAsync(
+    int id,
+    CancellationToken cancellationToken = default)
+{
+    if (id <= 0)
+    {
+        throw new ArgumentException(
+            "Product ID must be greater than zero.",
+            nameof(id));
+    }
+
+    return await _productRepository.DeleteAsync(id, cancellationToken);
+}
 }

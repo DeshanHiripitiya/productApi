@@ -13,4 +13,8 @@ public interface IProductService
         string name,
         decimal price,
         CancellationToken cancellationToken = default);
+
+    Task<bool> DeleteAsync(
+    int id,
+    CancellationToken cancellationToken = default);
 }

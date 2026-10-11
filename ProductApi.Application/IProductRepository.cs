@@ -15,4 +15,8 @@ public interface IProductRepository
     Task AddAsync(
         Product product,
         CancellationToken cancellationToken = default);
+
+    Task<bool> DeleteAsync(
+        int id,
+        CancellationToken cancellationToken = default);
 }
