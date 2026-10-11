@@ -1,6 +1,31 @@
 @ProductApi.API_HostAddress = http://localhost:5041
 
-GET {{ProductApi.API_HostAddress}}/weatherforecast/
+### List all products
+GET {{ProductApi.API_HostAddress}}/api/products
 Accept: application/json
 
-###
+### Get an existing product
+GET {{ProductApi.API_HostAddress}}/api/products/1
+Accept: application/json
+
+### Get a product that does not exist
+GET {{ProductApi.API_HostAddress}}/api/products/999999
+Accept: application/json
+
+### Create a product
+POST {{ProductApi.API_HostAddress}}/api/products
+Content-Type: application/json
+
+{
+  "name": "Wireless Mouse",
+  "price": 29.99
+}
+
+### Product name and price are required/validated
+POST {{ProductApi.API_HostAddress}}/api/products
+Content-Type: application/json
+
+{
+  "name": "",
+  "price": 0
+}

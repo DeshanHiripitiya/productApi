@@ -3,7 +3,7 @@ using ProductApi.Domain;
 
 namespace ProductApi.Application;
 
-public class ProductService
+public sealed class ProductService : IProductService
 {
     private readonly IProductRepository _productRepository;
 
