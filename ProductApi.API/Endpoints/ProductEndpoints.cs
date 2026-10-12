@@ -204,6 +204,10 @@ app.MapPut("/api/products/{id:int}", async Task<Results<
 .Produces(StatusCodes.Status400BadRequest)
 .Produces(StatusCodes.Status404NotFound);
 
+app.MapGet("/api/products/secure",
+    () => Results.Ok("Authenticated access"))
+    .RequireAuthorization();
+
         return app;
     }
 }
