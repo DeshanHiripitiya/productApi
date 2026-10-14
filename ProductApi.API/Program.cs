@@ -4,6 +4,7 @@ using ProductApi.Application;
 using ProductApi.API.Endpoints;
 using ProductApi.Infrastructure.Data;
 using ProductApi.Infrastructure.Repositories;
+using ProductApi.API.Hubs;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
+builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
@@ -36,6 +38,9 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+
+app.MapProductEndpoints();
+app.MapHub<ProductHub>("/hubs/products");
 
 var app = builder.Build();
 

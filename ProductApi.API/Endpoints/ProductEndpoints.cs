@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using ProductApi.API.Contracts;
 using ProductApi.Application;
+using Microsoft.AspNetCore.SignalR;
+using ProductApi.API.Hubs;
 
 namespace ProductApi.API.Endpoints;
 
