@@ -35,12 +35,11 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins("http://localhost:5173")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
-app.MapProductEndpoints();
-app.MapHub<ProductHub>("/hubs/products");
 
 var app = builder.Build();
 
@@ -48,9 +47,9 @@ app.UseCors("ReactDev");
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseHttpsRedirection();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -58,7 +57,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
 app.MapProductEndpoints();
+app.MapHub<ProductHub>("/hubs/products");
 
 app.Run();
