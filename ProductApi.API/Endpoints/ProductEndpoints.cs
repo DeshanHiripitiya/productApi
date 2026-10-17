@@ -70,6 +70,7 @@ public static class ProductEndpoints
             ValidationProblem>> (
             CreateProductRequest request,
             IProductService productService,
+            IHubContext<ProductHub> productHub,
             CancellationToken cancellationToken) =>
         {
             var validationResults = new List<ValidationResult>();
@@ -104,6 +105,11 @@ public static class ProductEndpoints
                 product.Name,
                 product.Price);
 
+            await productHub.Clients.All.SendAsync(
+                "ProductCreated",
+                response,
+                cancellationToken);
+
             return TypedResults.Created($"/api/products/{product.Id}", response);
         })
         .WithName("CreateProduct")
@@ -118,6 +124,7 @@ public static class ProductEndpoints
     ProblemHttpResult>> (
     int id,
     IProductService productService,
+    IHubContext<ProductHub> productHub,
     CancellationToken cancellationToken) =>
 {
     if (id <= 0)
@@ -129,6 +136,14 @@ public static class ProductEndpoints
     }
 
     var deleted = await productService.DeleteAsync(id, cancellationToken);
+
+    if (deleted)
+    {
+        await productHub.Clients.All.SendAsync(
+            "ProductDeleted",
+            id,
+            cancellationToken);
+    }
 
     return deleted
         ? TypedResults.NoContent()
@@ -149,6 +164,7 @@ app.MapPut("/api/products/{id:int}", async Task<Results<
     int id,
     UpdateProductRequest request,
     IProductService productService,
+    IHubContext<ProductHub> productHub,
     CancellationToken cancellationToken) =>
 {
     if (id <= 0)
@@ -193,10 +209,17 @@ app.MapPut("/api/products/{id:int}", async Task<Results<
         return TypedResults.NotFound();
     }
 
-    return TypedResults.Ok(new ProductResponse(
+    var response = new ProductResponse(
         product.Id,
         product.Name,
-        product.Price));
+        product.Price);
+
+    await productHub.Clients.All.SendAsync(
+        "ProductUpdated",
+        response,
+        cancellationToken);
+
+    return TypedResults.Ok(response);
 })
 .WithName("UpdateProduct")
 .WithSummary("Update a product")
